@@ -1,0 +1,37 @@
+// Medidas do modelo semântico Direct Lake (tabela de medidas: _Medidas)
+
+Potência Instalada (MW) =
+DIVIDE ( SUM ( gold_fato_geracao_distribuida[potencia_instalada_kw] ), 1000 )
+
+Empreendimentos =
+COUNTROWS ( gold_fato_geracao_distribuida )
+
+Potência Média (kW) =
+AVERAGE ( gold_fato_geracao_distribuida[potencia_instalada_kw] )
+
+Potência Acumulada (MW) =
+CALCULATE (
+    [Potência Instalada (MW)],
+    FILTER (
+        ALL ( gold_dim_calendario[data] ),
+        gold_dim_calendario[data] <= MAX ( gold_dim_calendario[data] )
+    )
+)
+
+Potência Ano Anterior (MW) =
+CALCULATE ( [Potência Instalada (MW)], SAMEPERIODLASTYEAR ( gold_dim_calendario[data] ) )
+
+Crescimento YoY % =
+DIVIDE ( [Potência Instalada (MW)] - [Potência Ano Anterior (MW)], [Potência Ano Anterior (MW)] )
+
+% Solar =
+DIVIDE (
+    CALCULATE ( [Potência Instalada (MW)], gold_dim_fonte[tipo_geracao] = "UFV" ),
+    [Potência Instalada (MW)]
+)
+
+UCs Beneficiadas =
+SUM ( gold_fato_geracao_distribuida[qtd_uc_recebe_credito] )
+
+Ranking UF =
+RANKX ( ALL ( gold_dim_localidade[uf] ), [Potência Instalada (MW)], , DESC, DENSE )

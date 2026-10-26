@@ -1,0 +1,31 @@
+[project]
+name = "aneel-lakehouse"
+version = "1.0.0"
+description = "Lakehouse medalhão no Microsoft Fabric com dados abertos de Geração Distribuída da ANEEL"
+requires-python = ">=3.10,<3.12"
+dependencies = ["pyspark==3.5.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Notebooks do Fabric: imports por célula e `spark`/`mssparkutils` injetados pelo runtime.
+"notebooks/*" = ["E402", "F821"]
